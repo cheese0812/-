@@ -1,0 +1,50 @@
+import os
+import pandas as pd
+import numpy as np
+np.set_printoptions(formatter={'float': '{: 0.2f}'.format})
+from google.colab import drive
+drive.mount('/data')
+
+print(os.listdir('/data/My Drive/data'))
+data_file = '/data/My Drive/data/bq-results-20200824-122326-yx45jfjmbh38.csv'
+data = pd.read_csv(data_file)
+
+data_array = data.drop(columns=["user_pseudo_id"]).to_numpy()
+
+from matplotlib import pyplot as plt
+from sklearn.cluster import KMeans
+data_to_predict = data_array
+
+seed = 2
+scores = []
+clusters = range(2,9)
+for cluster_number in clusters:
+    print(cluster_number)
+    clf = KMeans(n_clusters=cluster_number, random_state=seed)  # 聚类
+    clf.fit(data_to_predict)  # 拟合模型
+    scores.append(clf.inertia_)
+plt.xlabel('k')
+plt.ylabel('轮廓系数')
+plt.plot(clusters, scores, 'o-')
+plt.show()
+
+# data_to_predict = np.concatenate((data_array_hour, data_array_problems), axis=1)
+data_to_predict = data_array
+from matplotlib import pyplot as plt
+from sklearn.cluster import KMeans
+seed = 2
+clusters = 12
+
+clf = KMeans(n_clusters=clusters, random_state=seed)  # 聚类
+clf.fit(data_to_predict)  # 拟合模型
+
+# for i in range(clusters):
+#     data_array_day_temp = data_array_day[clf.labels_==i]
+#     X = np.resize(X0, (len(data_array_day_temp) * num))
+#     Y = np.resize(data_array_day_temp, (len(data_array_day_temp) * num))
+#     plt.title("group: {} : {}%".format(i, percents[i] * 100))
+#     plt.scatter(X, Y)
+#     plt.show()
+
+for i in range(0,11):
+    print(clf.cluster_centers_[i])
